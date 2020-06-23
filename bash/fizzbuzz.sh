@@ -4,26 +4,35 @@ if [ $1>0 ]; then
 else 
     b=21
 fi
+if [ $2>0 ]; then 
+    output=$2
+else 
+    output=fizzbuzz.txt
+fi
+
+printf "">$output
 
 
-st=`date +%s%N`
+st=`date +%s`
 fizzbuzz() {
-    printf "$1. "
-    if [ $(($1 % 15)) = 0 ]; then 
-        printf Fizz
+    m=""
+    printf "$1. ">>$output
+    if [ $(($1 % 3)) = 0 ]; then 
+        m= Fizz
     fi
     if [ $(($1 % 5)) = 0 ]; then 
-        printf Buzz
+        m=${m}Buzz
     fi
-    echo
+    return $m
 }
 
 for (( n=0; n<=$b; n++ ))
-    do fizzbuzz $n;
+    do p=`fizzbuzz $n`;
+       printf $p
     done
 
 
-ed=`date +%s%N`
+ed=`date +%s`
 echo Completed in $(( (ed - st)/1000000 )) ms
-echo Each iteration took `awk "BEGIN {print (($ed - $st)/1000000)/$b }"` ms
-echo `awk "BEGIN {printf \"%.4f\n\", $b/(($ed - $st)/1000000)}"` numbers per ms
+echo Each iteration took `awk "BEGIN {print (($ed - $st))/$b }"` s
+echo `awk "BEGIN {printf \"%.4f\n\", $b/(($ed - $st))}"` numbers per s
