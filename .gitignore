@@ -1,0 +1,7 @@
+noarch/*
+.vscode/*
+icons/*
+
+channeldata.json
+
+cuda.py

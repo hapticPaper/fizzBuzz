@@ -63,8 +63,6 @@ def fizzBuzzTimer(func, n=None, label=None):
     return 
 
 
-
-
 lfizzBuzz = lambda  n: ['FizzBuzz', '----', '----', 'Fizz', '----', 'Buzz', 'Fizz', '----', '----', 'Fizz', 'Buzz', '----', 'Fizz', '----', '----'][n % 15]
 cLambda = lambda  n: cachedFizz[n % 15]
 
