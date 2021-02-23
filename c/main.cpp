@@ -7,8 +7,7 @@ using namespace std::chrono;
 using namespace std;
 
 
-const int iterations = 10000;	
-const string fb[15] = { "FizzBuzz", "", "", "Fizz", "", "Buzz", "Fizz", "", "", "Fizz", "Buzz", "", "Fizz", "", ""};
+const long iterations = 10000;	
 
 
 struct fbRun{
@@ -61,6 +60,23 @@ fbData fizzbuzzMod(int m=iterations){
 	return rset;
 }
 
+fbData fizzbuzzClassic(int m=iterations){
+	fbData fset;
+	for(int x=0; x<m; x++){
+		int m5 = x % 5;
+		int m3 = x % 3;
+		string r = "";
+		if (m3==0){
+			r="Fizz";
+		}
+		if (m5==0){
+			r+= "Buzz";
+		}		
+		fset.data[x]=r;
+	}
+	return fset;
+}
+
 	
 
 // void calcbuzz (int n ){
@@ -73,9 +89,30 @@ fbData fizzbuzzMod(int m=iterations){
 // }
 
 fbData fbLookup(int m=iterations){
+	const string fb[15] = { "FizzBuzz", "", "", "Fizz", "", "Buzz", "Fizz", "", "", "Fizz", "Buzz", "", "Fizz", "", ""};
 	fbData rset;
 	for(int x=0; x<m; x++){
 		rset.data[x]=fb[x % 15];	
+	}
+	return rset;
+}
+
+fbData fbClassicMod(int m=iterations){
+	fbData rset;
+	for(int x=0; x<m; x++){
+		if(x % 15 == 0){
+			rset.data[x]="FizzBuzz"	;
+		}
+		else if(x % 3 == 0){
+			rset.data[x]="Fizz"	;
+		}
+		else if(x % 5 == 0){
+			rset.data[x]="Buzz"	;
+		}
+		else{
+			rset.data[x]="";
+		}
+		
 	}
 	return rset;
 }
@@ -131,15 +168,24 @@ fbRun fbCounter(fbData fbds, string approach, int durr){
 
 int main()
 {	
-	for (int test=0; test<25; test++){
-		
+
+	for (int test=0; test<25; test++){		
 		fbData dta = funcRunner(fbLookup, iterations, "Lookups");	
 	}
-
 	
 	for (int test=0; test<25; test++){
 		fbData dta2 = funcRunner(fizzbuzzMod, iterations, "fizzbuzzMod");			
 	}
+
+	for (int test=0; test<25; test++){
+		fbData dta2 = funcRunner(fizzbuzzClassic, iterations, "fizzbuzzClassic");			
+	}
+
+	for (int test=0; test<25; test++){
+		fbData dta2 = funcRunner(fbClassicMod, iterations, "fizzbuzzClassicMod");			
+	}
+
+
 	//fbRun lookups = fbCounter(dta, "Lookups", dta.duration);
 	
 	

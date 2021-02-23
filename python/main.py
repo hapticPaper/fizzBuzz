@@ -1,87 +1,85 @@
 import time, logging as l
 
+ITERATIONS = 10000
+FULLSET = ['FizzBuzz', '----', '----', 'Fizz', '----', 'Buzz', 'Fizz', '----', '----', 'Fizz', 'Buzz', '----', 'Fizz', '----', '----']
+
 l.basicConfig(  level=l.INFO,
                 format='%(asctime)-18s %(name)-5s %(levelname)-8s||   %(message)s',
             #datefmt='%d'
             )
+st = time.time_ns()
+FIZZDICT = {i:v for i, v in enumerate(FULLSET) }
+ed=time.time_ns()
+l.info(f"Cached dict: {FIZZDICT.__sizeof__()} bytes in {ed-st} nanoseconds ")
+
 
 
 def genBuzzList(n=15):
-    buzz = ["0"]
-    for i in range(1,n+1):
+    buzz = []
+    for i in range(0,n):
         if i % 15 == 0:
             buzz.append("FizzBuzz")
-        elif i % 5 == 0:
-            buzz.append("Buzz")
         elif i % 3 == 0:
             buzz.append("Fizz")
+        elif i % 5 == 0:
+            buzz.append("Buzz")
         else:
             buzz.append("-")
     return buzz
 
 
-l.info(f"Making {'15'} cached FizzBuzz terms ")
-st = time.time_ns()
-cachedFizz = genBuzzList()
-ed=time.time_ns()
-l.info(f"Cached {cachedFizz} - {cachedFizz.__sizeof__()} bytes in {ed-st} nanoseconds ")
-
-
-
-st = time.time_ns()
-fizzDict = {i:v for i, v in enumerate(cachedFizz) }
-ed=time.time_ns()
-l.info(f"Cached {fizzDict} - {fizzDict.__sizeof__()} bytes in {ed-st} nanoseconds ")
-
-
-
 
 def headerReporting(func, iterations)->str:
-    return f"Testing {func} with {str(iterations)}"
+    return f"Testing {func} with {str(iterations)}  |   "
 
 
-def cachedLookup(l=cachedFizz,n=1000001):
-    return [l[i % 15] for i in range(n)]
 
-
-def fizzBuzzTimer(func, n=None, label=None):      
-    if label:
-        l.info(f"Testing {label}")
-    else:
-        l.info(headerReporting(func,n)) 
-
-    st = time.time_ns()
+def fizzBuzzTimer(func, n=None, label=None):
+    report = ""  
     if n:
-        memSize=[func(i) for i in range(n+1)].__sizeof__()
+        report+=headerReporting(label,n)
+        st = time.time_ns()
+        a=[func(i) for i in range(n+1)]
+        ed=time.time_ns()
     else:
-        t = func()
-        memSize=t.__sizeof__()
-        n = n or len(t)
-    ed=time.time_ns()
-    l.info(f"{((ed-st)/n):0.4f} ms")
-    l.info(f"{(ed-st) / n:0.6f} ns per iteration. Resultant size: {memSize}")
+        report+=f"Testing {label}  |"
+        st = time.time_ns()
+        b = func()
+        ed=time.time_ns()
+
+    report+=f"{((ed-st)/1000):0.4f} μs   | "
+    report+=f"{(ed-st):0.6f} ns per iteration."
+    l.info(report)
     return 
 
 
-lfizzBuzz = lambda  n: ['FizzBuzz', '----', '----', 'Fizz', '----', 'Buzz', 'Fizz', '----', '----', 'Fizz', 'Buzz', '----', 'Fizz', '----', '----'][n % 15]
-cLambda = lambda  n: cachedFizz[n % 15]
+def runAlgo(func, iterations=1000):
+    return [func(i) for i in range(iterations)]
 
+def dictBuzz(iterations=1000):
+    return [FIZZDICT[i % 15] for i in range(iterations)]
 
 def listBuzz(n):
-    return cachedFizz[n % 15]
+    return FULLSET[n % 15]
 
-fizzBuzzTimer(lfizzBuzz, 1000001)
-fizzBuzzTimer(listBuzz, 1000001)
-fizzBuzzTimer(cachedLookup, label="Direct Cache")
-
+def cachedLookup(n=ITERATIONS):
+    return [FULLSET[i % 15] for i in range(n)]
 
 
+if __name__=='__main__':
+    stt=time.time_ns()
+    ett=time.time_ns()
+    l.info(f"Time test - {ett-stt}")
+    cLambda = lambda  n: FULLSET[n % 15]
+    staticBuzz = lambda  n: ['FizzBuzz', '----', '----', 'Fizz', '----', 'Buzz', 'Fizz', '----', '----', 'Fizz', 'Buzz', '----', 'Fizz', '----', '----'][n % 15]
 
-fizzBuzzTimer(lfizzBuzz, 10000)
+    fizzBuzzTimer(cLambda, ITERATIONS, label="Var Lambda")
+    fizzBuzzTimer(staticBuzz, ITERATIONS, label="staticBuzz Lambda")
+    #fizzBuzzTimer(dictBuzz, ITERATIONS, label="Dict Buzz")
+    fizzBuzzTimer(listBuzz, ITERATIONS, label="List Buzz")
+    fizzBuzzTimer(cachedLookup, label="Direct Cache")
+    #fizzBuzzTimer(genBuzzList,  ITERATIONS, label='Ifs')
 
-st = time.time_ns()
 
-ed=time.time_ns()
-print(f"{(ed-st)/1000000:0.4f} ms")
 
-print(f"{(ed-st) / 1000000} ns per iteration")
+
