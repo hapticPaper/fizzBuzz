@@ -8,6 +8,7 @@ using namespace std;
 
 
 const long iterations = 10000;	
+const int testCount = 25;
 
 
 struct fbRun{
@@ -77,6 +78,26 @@ fbData fizzbuzzClassic(int m=iterations){
 	return fset;
 }
 
+
+fbData simpleClassic(int m=iterations){
+	fbData fset;
+	for(int x=0; x<=m; x++){
+		if (x % 15 == 0){
+			fset.data[x]="FizzBuzz";
+		}
+		else if (x % 3 == 0){
+			fset.data[x]="Fizz";
+		}	
+		else if (x % 5 == 0){
+			fset.data[x]="Buzz";
+		}	
+		else {
+			fset.data[x]="";
+		}	
+	}
+	return fset;
+}
+
 	
 
 // void calcbuzz (int n ){
@@ -119,16 +140,18 @@ fbData fbClassicMod(int m=iterations){
 
 template<class T>
 fbData funcRunner (T func, int n, char* label){
+	string stringLabel = std::string(label);
 	auto t1 = std::chrono::steady_clock::now().time_since_epoch();
 	fbData fbresults = func(n);
 	auto t2 = std::chrono::steady_clock::now().time_since_epoch();	
 	fbresults.duration = int(std::chrono::duration_cast<std::chrono::microseconds>(t2-t1).count());
-	fbresults.approach = label; 
-	printf("%s: %d μs for %d iterations\n", label, fbresults.duration, n); 
+	fbresults.approach = std::string(stringLabel); 
+	// printf("%s:  %dμs for %d iterations\n", label , fbresults.duration , n); 
+	std::cout << stringLabel << ": " << fbresults.duration<< "μs for "<< n << " iterations.\n";
 	return fbresults;
 }
 
-fbRun fbCounter(fbData fbds, string approach, int durr){
+fbRun fbCounter(fbData fbds, char* approach, int durr){
 	fbRun newReport;
 	//fbds = timer((*algo)(iterations), iterations, approach);
 
@@ -168,13 +191,16 @@ fbRun fbCounter(fbData fbds, string approach, int durr){
 
 int main()
 {	
-
+	float lookuptotal = 0;
 	for (int test=0; test<25; test++){		
 		fbData dta = funcRunner(fbLookup, iterations, "Lookups");	
+		lookuptotal+=dta.duration;
 	}
 	
+	float modTotal = 0;
 	for (int test=0; test<25; test++){
-		fbData dta2 = funcRunner(fizzbuzzMod, iterations, "fizzbuzzMod");			
+		fbData dta2 = funcRunner(fizzbuzzMod, iterations, "fizzbuzzMod");	
+		modTotal+=dta2.duration;		
 	}
 
 	for (int test=0; test<25; test++){
@@ -184,6 +210,17 @@ int main()
 	for (int test=0; test<25; test++){
 		fbData dta2 = funcRunner(fbClassicMod, iterations, "fizzbuzzClassicMod");			
 	}
+	
+	// for (int test=0; test<25; test++){
+	// 	fbData dta2 = funcRunner(simpleClassic, iterations, "simpleClassic");			
+	// }
+
+	cout << "\n";
+	cout << "Average speed for direct lookups was " << lookuptotal/testCount << "μs \n" ;
+	cout << "Average speed for weird mods was " << modTotal/testCount << "μs \n";
+	// cout << "Average speed for direct lookups was \n" << lookuptotal/testCount;
+	// cout << "Average speed for direct lookups was \n" << lookuptotal/testCount;
+	
 
 
 	//fbRun lookups = fbCounter(dta, "Lookups", dta.duration);
